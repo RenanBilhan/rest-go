@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"rest-api/controller"
 	"rest-api/db"
+	"rest-api/repository"
 	"rest-api/usecase"
 )
 
@@ -15,8 +16,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	TripUseCase := usecase.NewTripUsecase()
+	TripRepository := repository.NewTripRepository(dbConnection)
+	TripUseCase := usecase.NewTripUsecase(TripRepository)
 
 	TripController := controller.NewTripController(TripUseCase)
 
@@ -27,6 +28,8 @@ func main() {
 	})
 
 	server.GET("/trips", TripController.GetTrips)
+	server.POST("/trips", TripController.CreateTrip)
+	server.GET("/trip/:id", TripController.GetById)
 
 	server.Run(":8000")
 
